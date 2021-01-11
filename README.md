@@ -1,4 +1,4 @@
-# Soojin-Bot
+# Sucrose
  A multi-purpose Discord bot.
 
  WIP
