@@ -4,8 +4,8 @@
  Currently WIP!
 
 ## Features
- -Currency system
- -![Danbooru](https://danbooru.donmai.us/) image search (NSFW)
+ - Currency system
+ - ![Danbooru](https://danbooru.donmai.us/) image search (NSFW)
 
 ### To-do
  - [ ] Genshin Impact gacha simulator (with inventory)
