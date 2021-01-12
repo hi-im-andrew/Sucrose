@@ -43,22 +43,22 @@ async def kill(ctx):
     else:
         await ctx.send(':no_entry: **You are not the bot owner!**')
 
-@bot.command(name='commands')
-async def _embed(ctx):
-    embed = discord.Embed(title='Command List', description='Command format: **=command <argument> [optional]**\n*Leave out the surrounding brackets!*', color=0x00bbff)
-    embed.set_thumbnail(url='https://pm1.narvii.com/6919/3c0da447938c379c9ac27f36c2635a307ab9a25br1-736-736v2_uhq.jpg')
-    
-    embed.add_field(name='General',
-                    value='=soojin **hehe xd**\n\n=dylan **speaks facts about Dylan**')
-    
-    embed.add_field(name='Currency',
-                    value='=balance [user] **Check your own balance (or another user\'s)**\n\n=daily **Free chromies! (cooldown 20 hours)**')
-    
-    embed.add_field(name='Danbooru (NSFW)', value='=find [tags] **Returns an image from Danbooru with specified tags**')
-    
-    embed.add_field(name='Admin', value='=kill **Stops the bot (owner only)**')
-    
-    await ctx.send(embed=embed)
+#@bot.command(name='commands')
+#async def _embed(ctx):
+#    embed = discord.Embed(title='Command List', description='Command format: **=command <argument> [optional]**\n*Leave out the surrounding brackets!*', color=0x00bbff)
+#    embed.set_thumbnail(url='https://pm1.narvii.com/6919/3c0da447938c379c9ac27f36c2635a307ab9a25br1-736-736v2_uhq.jpg')
+#    
+#    embed.add_field(name='General',
+#                    value='=soojin **hehe xd**\n\n=dylan **speaks facts about Dylan**')
+#    
+#    embed.add_field(name='Currency',
+#                    value='=balance [user] **Check your own balance (or another user\'s)**\n\n=daily **Free chromies! (cooldown 20 hours)**')
+#    
+#    embed.add_field(name='Danbooru (NSFW)', value='=find [tags] **Returns an image from Danbooru with specified tags**')
+#    
+#    embed.add_field(name='Admin', value='=kill **Stops the bot (owner only)**')
+#    
+#    await ctx.send(embed=embed)
 
 @bot.command()
 async def dylan(ctx):
@@ -66,8 +66,8 @@ async def dylan(ctx):
 
 @bot.command()
 @commands.is_nsfw()
-async def find(ctx, *args):
-    banned_tags = {'loli', 'shota', 'furry', 'bestiality', 'toddlercon', 'guro', 'scat'}
+async def danbooru(ctx, *args):
+    banned_tags = {'loli', 'shota', 'furry', 'bestiality', 'toddlercon', 'guro', 'gore', 'scat'}
     
     for tag in banned_tags:
         if tag in args:
@@ -77,16 +77,26 @@ async def find(ctx, *args):
             return
     
     try:
+        count = 0
         def _check():
+            nonlocal count
+            if count == 10:
+                raise AssertionError
+            
             raw = client.post_list(limit='1', tags=' '.join(args), random=True)
             for tag in banned_tags:
                 if tag in raw[0]['tag_string_general']:
                     print('Banned tag found! Finding new post.')
+                    count += 1
                     return _check()
             return raw[0]
         post = _check()
+    
+    except AssertionError:
+        await ctx.send(embed=discord.Embed(title='Error', description='Too many posts with banned tags. Cancelling search.', color=0xff1100))
+        return
     except:
-        await ctx.send(embed=discord.Embed(title='Error', description='No posts on Danbooru with matching tags', color=0xff1100))
+        await ctx.send(embed=discord.Embed(title='Error', description='No posts on Danbooru with matching/allowed tags', color=0xff1100))
         return
 
     #Post details
@@ -115,7 +125,7 @@ async def find(ctx, *args):
     embed.add_field(name='Dimensions', value=str(post['image_height']) + 'x' + str(post['image_width']), inline=True)
     embed.add_field(name='Post ID', value=pid, inline=True)
     embed.add_field(name='Link', value=f'[In case image isn\'t displayed](https://danbooru.donmai.us/posts/{pid})', inline=True)
-    embed.set_footer(text=post['tag_string_character'] + ' ' + post['tag_string_general'])
+    embed.set_footer(text=post['tag_string_character'] + ' ' + post['tag_string_general'] + '\nPowered by Pybooru')
     embed.set_image(url=post['file_url'])
 
     await ctx.send(embed=embed)
