@@ -126,7 +126,7 @@ dmypy.json
 .pyre/
 
 # Other stuff
-pfp.jpg
+.extra/
 .vscode/
 points.csv
-seo soojin.code-workspace
+Sucrose.code-workspace
