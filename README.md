@@ -8,6 +8,7 @@
  - [Danbooru](https://danbooru.donmai.us/) image search (NSFW)
 
 ### To-do
+ - [x] Genshin Impact information retrieval tool
  - [ ] Genshin Impact gacha simulator (with inventory)
  - [ ] League of Legends stats with Riot Games API
  - [ ] Various tools with Twitch API
