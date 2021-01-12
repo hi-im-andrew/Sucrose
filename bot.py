@@ -1,6 +1,6 @@
 # bot.py
 
-import discord, random, os
+import discord, random, os, json
 from discord.ext import commands
 from dotenv import load_dotenv
 from pybooru import Danbooru
@@ -18,7 +18,7 @@ async def on_ready():
     print()
     print(f'{bot.user} is connected to:')
     print([g.name for g in bot.guilds])
-    await bot.change_presence(activity=discord.Game(name='=help'))
+    await bot.change_presence(activity=discord.Game(name='mommy milkers!'))
 
 @bot.command()
 async def soojin(ctx):
@@ -43,26 +43,15 @@ async def kill(ctx):
     else:
         await ctx.send(':no_entry: **You are not the bot owner!**')
 
-#@bot.command(name='commands')
-#async def _embed(ctx):
-#    embed = discord.Embed(title='Command List', description='Command format: **=command <argument> [optional]**\n*Leave out the surrounding brackets!*', color=0x00bbff)
-#    embed.set_thumbnail(url='https://pm1.narvii.com/6919/3c0da447938c379c9ac27f36c2635a307ab9a25br1-736-736v2_uhq.jpg')
-#    
-#    embed.add_field(name='General',
-#                    value='=soojin **hehe xd**\n\n=dylan **speaks facts about Dylan**')
-#    
-#    embed.add_field(name='Currency',
-#                    value='=balance [user] **Check your own balance (or another user\'s)**\n\n=daily **Free chromies! (cooldown 20 hours)**')
-#    
-#    embed.add_field(name='Danbooru (NSFW)', value='=find [tags] **Returns an image from Danbooru with specified tags**')
-#    
-#    embed.add_field(name='Admin', value='=kill **Stops the bot (owner only)**')
-#    
-#    await ctx.send(embed=embed)
-
 @bot.command()
 async def dylan(ctx):
     await ctx.send('dylan is a peepeepoopoo head <:OMEGALUL:392184053975220244>')
+
+@bot.command()
+async def about(ctx):
+    await ctx.send('Developed by yours truly <3\nhttps://github.com/hi-im-andrew/Sucrose')
+
+# Danbooru
 
 @bot.command()
 @commands.is_nsfw()
@@ -130,6 +119,8 @@ async def danbooru(ctx, *args):
 
     await ctx.send(embed=embed)
 
+# Currency system
+
 @bot.command()
 @commands.cooldown(rate=1, per=72000, type=commands.BucketType.user)
 async def daily(ctx):
@@ -147,6 +138,7 @@ async def balance(ctx):
                                        description=f'<:GoodPepeDank:794513428014039060>{bal} chromies'))
 
 @bot.command()
+@commands.cooldown(rate=1, per=60, type=commands.BucketType.user)
 async def gamble(ctx, amount):
     if amount == 'all':
         amount = ps.get_balance(ctx.author.id)
@@ -226,6 +218,15 @@ async def flip(ctx, choice: str):
         await ctx.send(embed=discord.Embed(title='Tails!', description='<:Sadge:740811323558068238> Better luck next time!', color=0xff1100))
     elif choice in tails and outcome == 0:
         await ctx.send(embed=discord.Embed(title='Heads!', description='<:Sadge:740811323558068238> Better luck next time!', color=0xff1100))
+
+# Genshin Impact 
+
+@bot.command()
+async def character(ctx):
+    pass
+
+
+
 
 @bot.event
 async def on_command_error(ctx, error):
