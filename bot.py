@@ -227,25 +227,113 @@ async def flip(ctx, choice: str):
         await ctx.send(embed=discord.Embed(title='Heads!', description='<:Sadge:740811323558068238> Better luck next time!', color=0xff1100))
 
 # Genshin Impact 
+elements = {'Anemo': 0x9ef9cd, 'Geo': 0xf4d862, 'Electro': 0xc36dff, 'Dendro': 0xb1ea26, 'Hydro': 0x079fff, 'Pyro': 0xff8739, 'Cryo': 0xccfffe}
+rarity = {5: 0xff8000, 4: 0xa335ee, 3: 0x0070dd, 2: 0x1eff00, 1: 0xffffff}
+
+@bot.command()
+async def characters(ctx):
+    raw = requests.get('https://api.genshin.dev/characters')
+    data = raw.json()
+    desc = ', '.join([i.capitalize() for i in data])
+    await ctx.send(embed=discord.Embed(title='Character List', description=desc))
+
+@bot.command()
+async def artifacts(ctx):
+    raw = requests.get('https://api.genshin.dev/artifacts')
+    data = raw.json()
+    desc = ', '.join([i.capitalize() for i in data])
+    await ctx.send(embed=discord.Embed(title='Artifact Sets', description=desc))
+
+@bot.command()
+async def weapons(ctx):
+    raw = requests.get('https://api.genshin.dev/weapons')
+    data = raw.json()
+    desc = ', '.join([i.capitalize() for i in data])
+    await ctx.send(embed=discord.Embed(title='Weapon List', description=desc))
 
 @bot.command()
 async def character(ctx, name):
-    elements = {'Anemo': 0x9ef9cd, 'Geo': 0xf4d862, 'Electro': 0xc36dff, 'Dendro': 0xb1ea26, 'Hydro': 0x079fff, 'Pyro': 0xff8739, 'Cryo': 0xccfffe}
+    name = name.lower()
+    names = requests.get(f'https://api.genshin.dev/characters')
+    names = names.json()
+    for char in names:
+        if name in char:
+            name = char
+            break
     
     raw = requests.get(f'https://api.genshin.dev/characters/{name}')
     data = raw.json()
     
-    embed = discord.Embed(name=f'{data["name"]}, {data["title"]}', description=''.join([':star:' for i in range(0, int(data["rarity"]) + 1)]), color=elements[data["vision"]])
-    embed.set_footer(text='Powered by genshin.dev')
-    embed.add_field(name='Vision', value=data["vision"])
+    embed = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=elements[data["vision"]])
+    embed.set_footer(text='Powered by genshin.dev | Images from genshin.gg')
+    embed.add_field(name='Element', value=data["vision"])
     embed.add_field(name='Weapon', value=data["weapon"])
-    embed.add_field(name='Gender', value=data["gender"])
-    embed.add_field(name='Nation', value=data["nation"])
-    embed.add_field(name='Affiliation', value=data["affiliation"])
-    embed.add_field(name='Constellation', value=data["constellation"])
-    bday = data["birthday"].split('-')
-    embed.add_field(name='Birthday', value=f'{bday[1]}/{bday[2]}')
     embed.add_field(name='Bio', value=data["description"], inline=False)
+    
+    if name == 'traveler-anemo': # temporary solution
+        embed.set_thumbnail(url=f'https://rerollcdn.com/GENSHIN/Characters/Traveler%20(Anemo).png')
+    elif name == 'traveler-geo': # ditto
+        embed.set_thumbnail(url=f'https://rerollcdn.com/GENSHIN/Characters/Traveler%20(Geo).png')
+    else:
+        embed.set_thumbnail(url=f'https://rerollcdn.com/GENSHIN/Characters/{name.capitalize()}.png')
+    
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def artifact(ctx, name):
+    name = name.lower()
+    names = requests.get(f'https://api.genshin.dev/artifacts')
+    names = names.json()
+    for item in names:
+        if name in item:
+            name = item
+            break
+    
+    raw = requests.get(f'https://api.genshin.dev/artifacts/{name}')
+    data = raw.json()
+    
+    embed = discord.Embed(title=f'{data["name"]}', description='Max Rarity: ' + ''.join([':star:' for i in range(0, data["max_rarity"])]), color=rarity[data["max_rarity"]])
+    embed.set_footer(text='Powered by genshin.dev | Images from genshin.gg')
+    embed.add_field(name='2-Piece Bonus', value=data["2-piece_bonus"], inline=False)
+    embed.add_field(name='4-Piece Bonus', value=data["4-piece_bonus"], inline=False)
+    embed.set_thumbnail(url=f'https://rerollcdn.com/GENSHIN/Gear/{name.replace("-", "_")}.png')
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def weapon(ctx, name):
+    name = name.lower()
+    names = requests.get(f'https://api.genshin.dev/weapons')
+    names = names.json()
+    for item in names:
+        if name in item:
+            name = item
+            break
+    
+    raw = requests.get(f'https://api.genshin.dev/weapons/{name}')
+    data = raw.json()
+    
+    embed = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=rarity[data["rarity"]])
+    embed.set_footer(text='Powered by genshin.dev | Images from genshin.gg')
+    embed.add_field(name='Type', value=data["type"])
+    embed.add_field(name='Base ATK', value=data["baseAttack"])
+    embed.add_field(name='Substat', value=data["subStat"])
+    embed.add_field(name=data['passiveName'], value=data["passiveDesc"], inline=False)
+    embed.add_field(name='How to Acquire', value=data["location"])
+    
+    ignore = ['of', 'to', 'the']
+    temp = name.split('-')
+    if temp[0] == 'the':
+        ignore.remove('the')
+    x = -1
+    for word in temp:
+        x += 1
+        if word in ignore:
+            pass
+        else:
+            temp[x] = word.capitalize()
+    print(temp)
+    print("_".join(temp))
+    embed.set_thumbnail(url=f'https://rerollcdn.com/GENSHIN/Weapon/NEW/{"_".join(temp)}.png')
     await ctx.send(embed=embed)
 
 
