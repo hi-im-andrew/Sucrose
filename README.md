@@ -4,7 +4,7 @@
  Currently WIP!
 
 ## Features
- - Genshin Impact data lookup for characters, weapons, and artifacts
+ - Genshin Impact data lookup for characters, weapons, and artifacts (info courtesy of genshin.dev API)
  - Currency system
  - [Danbooru](https://danbooru.donmai.us/) image search (NSFW)
 
