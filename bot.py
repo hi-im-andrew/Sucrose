@@ -1,6 +1,6 @@
 # bot.py
 
-import discord, random, os, json
+import discord, random, os, json, requests
 from discord.ext import commands
 from dotenv import load_dotenv
 from pybooru import Danbooru
@@ -48,8 +48,15 @@ async def dylan(ctx):
     await ctx.send('dylan is a peepeepoopoo head <:OMEGALUL:392184053975220244>')
 
 @bot.command()
+async def ed(ctx):
+    if ctx.author.id == 355965807840329729:
+        await ctx.send('lmao stfu nerd')
+    else:
+        await ctx.send('ed gei lmfao <:OMEGALUL:392184053975220244>')
+
+@bot.command()
 async def about(ctx):
-    await ctx.send('Developed by yours truly <3\nhttps://github.com/hi-im-andrew/Sucrose')
+    await ctx.send('**Developed by yours truly <3**\nhttps://github.com/hi-im-andrew/Sucrose')
 
 # Danbooru
 
@@ -108,12 +115,12 @@ async def danbooru(ctx, *args):
     pid = post['id']
 
     embed = discord.Embed(color=random.randint(0, 0xffffff))
-    embed.add_field(name='Score', value=post['score'], inline=True)
-    embed.add_field(name='Rating', value=rating, inline=True)
-    embed.add_field(name='Artist', value=post['tag_string_artist'], inline=True)
-    embed.add_field(name='Dimensions', value=str(post['image_height']) + 'x' + str(post['image_width']), inline=True)
-    embed.add_field(name='Post ID', value=pid, inline=True)
-    embed.add_field(name='Link', value=f'[In case image isn\'t displayed](https://danbooru.donmai.us/posts/{pid})', inline=True)
+    embed.add_field(name='Score', value=post['score'])
+    embed.add_field(name='Rating', value=rating)
+    embed.add_field(name='Artist', value=post['tag_string_artist'])
+    embed.add_field(name='Dimensions', value=str(post['image_height']) + 'x' + str(post['image_width']))
+    embed.add_field(name='Post ID', value=pid)
+    embed.add_field(name='Link', value=f'[In case image isn\'t displayed](https://danbooru.donmai.us/posts/{pid})')
     embed.set_footer(text=post['tag_string_character'] + ' ' + post['tag_string_general'] + '\nPowered by Pybooru')
     embed.set_image(url=post['file_url'])
 
@@ -126,7 +133,7 @@ async def danbooru(ctx, *args):
 async def daily(ctx):
     ps.update_entry(ctx.author.id, 500)
     await ctx.send(embed=discord.Embed(title='C H R <:OMEGALUL:392184053975220244> M I E S', color=0x69f420,
-                                       description=f'<:GoodPepeDank:794513428014039060>200 chromies added to {ctx.author.name}\'s balance!'))
+                                       description=f'<:GoodPepeDank:794513428014039060>200 chromosomes added to {ctx.author.name}\'s balance!'))
 
 @bot.command()
 async def balance(ctx):
@@ -135,7 +142,7 @@ async def balance(ctx):
     except:
         bal = 0
     await ctx.send(embed=discord.Embed(title=f'{ctx.author.name}\'s balance', color=0x69f420,
-                                       description=f'<:GoodPepeDank:794513428014039060>{bal} chromies'))
+                                       description=f'<:GoodPepeDank:794513428014039060>{bal} chromosomes'))
 
 @bot.command()
 @commands.cooldown(rate=1, per=60, type=commands.BucketType.user)
@@ -160,18 +167,18 @@ async def gamble(ctx, amount):
     if random.random() < 0.5:
         ps.update_entry(ctx.author.id, amount)
         await ctx.send(embed=discord.Embed(title='Heads!', color=0x69f420,
-                                           description=f'{amount} chromies added to {ctx.author.name}\'s balance!\n\
+                                           description=f'{amount} chromosomes added to {ctx.author.name}\'s balance!\n\
                                                Current balance: <:GoodPepeDank:794513428014039060>{ps.get_balance(ctx.author.id)}'))
     else:
         ps.update_entry(ctx.author.id, -amount)
         await ctx.send(embed=discord.Embed(title='Tails!', color=0xff1100,
-                                           description=f'You lost {amount} chromies!\n\
+                                           description=f'You lost {amount} chromosomes!\n\
                                             Current balance: <:GoodPepeDank:794513428014039060>{ps.get_balance(ctx.author.id)}'))
 
 @bot.command()
 async def give(ctx, member: discord.Member, amount: int):
     if ctx.author == member:
-        await ctx.send(embed=discord.Embed(title='Error', description=f':x: You can\'t give yourself chromies!', color=0xff1100))
+        await ctx.send(embed=discord.Embed(title='Error', description=f':x: You can\'t give yourself chromosomes!', color=0xff1100))
         return
     if amount > ps.get_balance(ctx.author.id):
         await ctx.send(embed=discord.Embed(title='Error', description=f':x: Amount must be less than or equal to your current balance!', color=0xff1100))
@@ -180,7 +187,7 @@ async def give(ctx, member: discord.Member, amount: int):
         await ctx.send(embed=discord.Embed(title='Error', description=f':x: Amount must be greater than zero!', color=0xff1100))
         return
     
-    await ctx.send(f'{member.mention}, {ctx.author.mention} would like to give you <:GoodPepeDank:794513428014039060>{amount} chromies. Type Y to accept or N to decline.')
+    await ctx.send(f'{member.mention}, {ctx.author.mention} would like to give you <:GoodPepeDank:794513428014039060>{amount} chromosomes. Type Y to accept or N to decline.')
 
     def _check(reply):
         return reply.author == member and reply.channel == ctx.channel and reply.content.lower() in ["y", "n"]
@@ -207,12 +214,12 @@ async def flip(ctx, choice: str):
     if choice in heads and outcome == 0:
         ps.update_entry(ctx.author.id, 1)
         await ctx.send(embed=discord.Embed(title='Heads!', color=0x69f420,
-                                           description=f'<:Pog:689280885027242169> You won 1 chromie!\n\
+                                           description=f'<:Pog:689280885027242169> You won 1 chromosome!\n\
                                             Current balance: <:GoodPepeDank:794513428014039060>{ps.get_balance(ctx.author.id)}'))
     elif choice in tails and outcome == 1:
         ps.update_entry(ctx.author.id, 1)
         await ctx.send(embed=discord.Embed(title='Tails!', color=0x69f420,
-                                           description=f'<:Pog:689280885027242169> You won 1 chromie!\n\
+                                           description=f'<:Pog:689280885027242169> You won 1 chromosome!\n\
                                             Current balance: <:GoodPepeDank:794513428014039060>{ps.get_balance(ctx.author.id)}'))
     elif choice in heads and outcome == 1:
         await ctx.send(embed=discord.Embed(title='Tails!', description='<:Sadge:740811323558068238> Better luck next time!', color=0xff1100))
@@ -222,9 +229,24 @@ async def flip(ctx, choice: str):
 # Genshin Impact 
 
 @bot.command()
-async def character(ctx):
-    pass
-
+async def character(ctx, name):
+    elements = {'Anemo': 0x9ef9cd, 'Geo': 0xf4d862, 'Electro': 0xc36dff, 'Dendro': 0xb1ea26, 'Hydro': 0x079fff, 'Pyro': 0xff8739, 'Cryo': 0xccfffe}
+    
+    raw = requests.get(f'https://api.genshin.dev/characters/{name}')
+    data = raw.json()
+    
+    embed = discord.Embed(name=f'{data["name"]}, {data["title"]}', description=''.join([':star:' for i in range(0, int(data["rarity"]) + 1)]), color=elements[data["vision"]])
+    embed.set_footer(text='Powered by genshin.dev')
+    embed.add_field(name='Vision', value=data["vision"])
+    embed.add_field(name='Weapon', value=data["weapon"])
+    embed.add_field(name='Gender', value=data["gender"])
+    embed.add_field(name='Nation', value=data["nation"])
+    embed.add_field(name='Affiliation', value=data["affiliation"])
+    embed.add_field(name='Constellation', value=data["constellation"])
+    bday = data["birthday"].split('-')
+    embed.add_field(name='Birthday', value=f'{bday[1]}/{bday[2]}')
+    embed.add_field(name='Bio', value=data["description"], inline=False)
+    await ctx.send(embed=embed)
 
 
 
