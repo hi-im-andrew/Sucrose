@@ -1,5 +1,5 @@
 # Sucrose
- A multi-purpose Discord bot.
+ A multi-purpose Discord bot with fun features as well as data from Genshin Impact and Riot Games.
 
  Currently WIP!
 
