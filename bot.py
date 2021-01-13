@@ -34,10 +34,10 @@ async def soojin(ctx):
     await ctx.send(embed=embed)
 
 @bot.command()
-async def kill(ctx):
+async def sleep(ctx):
     print(bot.owner_id)
     if ctx.author.id == 126105851504099328:
-        await ctx.send(':x: **Stopping bot! Goodbye.**')
+        await ctx.send(':sleeping_accommodation: **Th-The sun is already out? Oh, ah, okay! Just one last experiment, and then we can get some rest. Last one, I promise...** :zzz:')
         print('Stopping bot!')
         await bot.logout()
     else:
@@ -331,8 +331,7 @@ async def weapon(ctx, name):
             pass
         else:
             temp[x] = word.capitalize()
-    print(temp)
-    print("_".join(temp))
+
     embed.set_thumbnail(url=f'https://rerollcdn.com/GENSHIN/Weapon/NEW/{"_".join(temp)}.png')
     await ctx.send(embed=embed)
 
