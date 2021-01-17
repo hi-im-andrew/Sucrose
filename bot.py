@@ -57,7 +57,7 @@ async def danbooru(ctx, *args):
             raw = client.post_list(limit='1', tags=' '.join(args), random=True)
             for tag in banned_tags:
                 if tag in raw[0]['tag_string_general']:
-                    print('Banned tag found! Finding new post.')
+                    print(f'{ctx.author.name}: Banned tag found! Finding new post. {ctx.message.created_at}')
                     count += 1
                     return _check()
             return raw[0]
@@ -121,7 +121,7 @@ async def danbooru(ctx, *args):
 async def daily(ctx):
     ps.update_entry(ctx.author.id, 500)
     await ctx.send(embed=discord.Embed(title='C H R <:OMEGALUL:392184053975220244> M I E S', color=0x69f420,
-                                       description=f'<:GoodPepeDank:794513428014039060>200 chromosomes added to {ctx.author.name}\'s balance!'))
+                                       description=f'<:GoodPepeDank:794513428014039060>500 chromosomes added to {ctx.author.name}\'s balance!'))
 
 @bot.command()
 async def balance(ctx):
@@ -140,26 +140,23 @@ async def gamble(ctx, amount):
     try:
         amount = int(amount)
     except:
-        await ctx.send(embed=discord.Embed(title='Error', color=0xff1100,
-                                           description=f':x: Invalid amount!'))
+        await ctx.send(embed=discord.Embed(title='Error', color=0xff1100, description=f':x: Invalid amount!'))
         return
     if amount > ps.get_balance(ctx.author.id):
-        await ctx.send(embed=discord.Embed(title='Error', color=0xff1100,
-                                           description=f':x: Amount must be less than or equal to your current balance!'))
+        await ctx.send(embed=discord.Embed(title='Error', color=0xff1100, description=f':x: Amount must be less than or equal to your current balance!'))
         return
     elif amount <= 0:
-        await ctx.send(embed=discord.Embed(title='Error', color=0xff1100,
-                                           description=f':x: Amount must be greater than zero!'))
+        await ctx.send(embed=discord.Embed(title='Error', color=0xff1100, description=f':x: Amount must be greater than zero!'))
         return
     
     if random.random() < 0.5:
         ps.update_entry(ctx.author.id, amount)
-        await ctx.send(embed=discord.Embed(title='Heads!', color=0x69f420,
+        await ctx.send(embed=discord.Embed(title='You win!', color=0x69f420,
                                            description=f'{amount} chromosomes added to {ctx.author.name}\'s balance!\n\
                                                Current balance: <:GoodPepeDank:794513428014039060>{ps.get_balance(ctx.author.id)}'))
     else:
         ps.update_entry(ctx.author.id, -amount)
-        await ctx.send(embed=discord.Embed(title='Tails!', color=0xff1100,
+        await ctx.send(embed=discord.Embed(title='You lose!', color=0xff1100,
                                            description=f'You lost {amount} chromosomes!\n\
                                             Current balance: <:GoodPepeDank:794513428014039060>{ps.get_balance(ctx.author.id)}'))
 
@@ -226,9 +223,9 @@ async def flip(ctx, choice: str):
 #  \______/  \_______|\__|  \__|\_______/ \__|  \__|\__|\__|  \__|
 
 
-# color codes
-elements = {'Anemo': 0x9ef9cd, 'Geo': 0xf4d862, 'Electro': 0xc36dff, 'Dendro': 0xb1ea26, 'Hydro': 0x079fff, 'Pyro': 0xff8739, 'Cryo': 0xccfffe}
-rarity = {5: 0xff8000, 4: 0xa335ee, 3: 0x0070dd, 2: 0x1eff00, 1: 0xffffff}
+# color codes for elements and rarity
+colors = {'Anemo': 0x9ef9cd, 'Geo': 0xf4d862, 'Electro': 0xc36dff, 'Dendro': 0xb1ea26, 'Hydro': 0x079fff, 'Pyro': 0xff8739, 'Cryo': 0xccfffe,\
+            5: 0xff8000, 4: 0xa335ee, 3: 0x0070dd, 2: 0x1eff00, 1: 0xffffff}
 
 @bot.command()
 async def characters(ctx):
@@ -268,25 +265,28 @@ async def character(ctx, name):
     raw = requests.get(f'https://api.genshin.dev/characters/{name}')
     data = raw.json()
     
-    page1 = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=elements[data["vision"]])
-    page1.set_footer(text='Page 1/3 • Powered by genshin.dev | Images from genshin.gg')
+    page1 = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=colors[data["vision"]])
+    page1.set_footer(text='Page 1/4 • Character Info • Powered by genshin.dev | Images from genshin.gg')
     page1.add_field(name='Element', value=data["vision"])
     page1.add_field(name='Weapon', value=data["weapon"])
     page1.add_field(name='Bio', value=data["description"], inline=False)
     
-    page2 = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=elements[data["vision"]])
-    page2.set_footer(text='Page 2/3 • Powered by genshin.dev | Images from genshin.gg')
+    page2 = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=colors[data["vision"]])
+    page2.set_footer(text='Page 2/4 • Skill Talents • Powered by genshin.dev | Images from genshin.gg')
     for talent in data["skillTalents"]:
         page2.add_field(name=f'{talent["unlock"]}: {talent["name"]}', value=talent["description"], inline=False)
+    
+    page3 = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=colors[data["vision"]])
+    page3.set_footer(text='Page 3/4 • Passive Talents • Powered by genshin.dev | Images from genshin.gg')
     for passive in data["passiveTalents"]:
-        page2.add_field(name=f'{passive["name"]}: {passive["unlock"]}', value=passive["description"], inline=False)
+        page3.add_field(name=f'{passive["name"]}: {passive["unlock"]}', value=passive["description"], inline=False)
     
-    page3 = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=elements[data["vision"]])
-    page3.set_footer(text='Page 3/3 • Powered by genshin.dev | Images from genshin.gg')
+    page4 = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=colors[data["vision"]])
+    page4.set_footer(text='Page 4/4 • Constellations • Powered by genshin.dev | Images from genshin.gg')
     for const in data["constellations"]:
-        page3.add_field(name=f'{const["unlock"]}: {const["name"]}', value=const["description"], inline=False)
+        page4.add_field(name=f'{const["unlock"]}: {const["name"]}', value=const["description"], inline=False)
     
-    embeds = [page1, page2, page3]
+    embeds = [page1, page2, page3, page4]
 
     for p in embeds:
         if 'traveler' in name:
@@ -310,7 +310,7 @@ async def artifact(ctx, name):
     raw = requests.get(f'https://api.genshin.dev/artifacts/{name}')
     data = raw.json()
     
-    embed = discord.Embed(title=f'{data["name"]}', description='Max Rarity: ' + ''.join([':star:' for i in range(0, data["max_rarity"])]), color=rarity[data["max_rarity"]])
+    embed = discord.Embed(title=f'{data["name"]}', description='Max Rarity: ' + ''.join([':star:' for i in range(0, data["max_rarity"])]), color=colors[data["max_rarity"]])
     embed.set_footer(text='Powered by genshin.dev | Images from genshin.gg')
     embed.add_field(name='2-Piece Bonus', value=data["2-piece_bonus"], inline=False)
     embed.add_field(name='4-Piece Bonus', value=data["4-piece_bonus"], inline=False)
@@ -330,7 +330,7 @@ async def weapon(ctx, name):
     raw = requests.get(f'https://api.genshin.dev/weapons/{name}')
     data = raw.json()
     
-    embed = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=rarity[data["rarity"]])
+    embed = discord.Embed(title=f'{data["name"]}', description=''.join([':star:' for i in range(0, data["rarity"])]), color=colors[data["rarity"]])
     embed.set_footer(text='Powered by genshin.dev | Images from genshin.gg')
     embed.add_field(name='Type', value=data["type"])
     embed.add_field(name='Base ATK', value=data["baseAttack"])
@@ -403,7 +403,9 @@ async def ed(ctx):
 async def about(ctx):
     await ctx.send('**Developed by yours truly <3**\nhttps://github.com/hi-im-andrew/Sucrose')
 
-
+@bot.command()
+async def ganyu(ctx):
+    await ctx.send('mommy milkers? <:QiqiPeek:795846813952245760>')
 
 
 
