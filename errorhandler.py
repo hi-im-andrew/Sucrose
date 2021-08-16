@@ -1,0 +1,3 @@
+# errorhandler.py
+
+import discord
